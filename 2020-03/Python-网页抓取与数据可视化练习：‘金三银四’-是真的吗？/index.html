@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"coderx.wang","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"coderx.wang","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":true,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="一年之计在于春，2020 的春天因为疫情可能改变了许多人的计划，如三四月份是企业传统招聘高峰期之一，再有许多帅小伙过年拜见了丈母娘催促着得买房等，职场与楼市素有 ‘金三银四’ 的说法，然而，这是真的吗？ 最近又学习了一下 Python（为什么是又？因为学了就忘..），想到何不简单验证一下，毕竟数据不会撒谎。  主要流程：  选取楼市情况作为分析对象，与目前公司业务有点相关性。 从 武汉市住房保障和">
@@ -140,6 +140,8 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
 
 
     <main class="main">
@@ -179,13 +181,6 @@
 
               <time title="创建时间：2020-03-19 22:42:41" itemprop="dateCreated datePublished" datetime="2020-03-19T22:42:41+08:00">2020-03-19</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-23 21:00:28" itemprop="dateModified" datetime="2020-03-23T21:00:28+08:00">2020-03-23</time>
-              </span>
 
           
   
@@ -273,8 +268,9 @@
 
 
       <footer class="post-footer">
+          
           <div class="post-tags">
-              <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
           </div>
 
         
@@ -282,11 +278,11 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2019-07/iOS 打包发布自动化实践：fastlane/" rel="prev" title="iOS 打包发布自动化实践：fastlane">
-      <i class="fa fa-chevron-left"></i> iOS 打包发布自动化实践：fastlane
-    </a></div>
       <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2019-07/iOS 打包发布自动化实践：fastlane/" rel="next" title="iOS 打包发布自动化实践：fastlane">
+      iOS 打包发布自动化实践：fastlane <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -346,7 +342,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、获取数据"><span class="nav-number">1.</span> <span class="nav-text">1、获取数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、保存数据"><span class="nav-number">2.</span> <span class="nav-text">2、保存数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、读取数据"><span class="nav-number">3.</span> <span class="nav-text">3、读取数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、数据可视化"><span class="nav-number">4.</span> <span class="nav-text">4、数据可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、简要分析"><span class="nav-number">5.</span> <span class="nav-text">5、简要分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#one-more-thing"><span class="nav-number">6.</span> <span class="nav-text">one more thing</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、获取数据"><span class="nav-text">1、获取数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、保存数据"><span class="nav-text">2、保存数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、读取数据"><span class="nav-text">3、读取数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、数据可视化"><span class="nav-text">4、数据可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、简要分析"><span class="nav-text">5、简要分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#one-more-thing"><span class="nav-text">one more thing</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -370,6 +366,17 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/coderxdotwang" title="GitHub → https://github.com/coderxdotwang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/6288484" title="StackOverflow → https://stackoverflow.com/users/6288484" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
 
 
 
@@ -398,7 +405,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">CoderWangx</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
 
         
@@ -420,7 +427,7 @@
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script>
 <script src="/js/schemes/pisces.js"></script>
-<script src="/js/next-boot.js"></script>
+<script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
 
 
 
@@ -455,7 +462,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
     });
     new Valine({
       el         : '#valine-comments',
-      verify     : false,
+      verify     : true,
       notify     : false,
       appId      : 'O4a57wLfn3IjVJeSRPbfHRkW-gzGzoHsz',
       appKey     : 'BADPOccLvd5InSDWvG4vycrI',
