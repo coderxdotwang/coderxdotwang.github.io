@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.8.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"coderx.wang","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":true,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="原文链接：https://www.vadimbulavin.com/xcode-build-system/ by Vadim Bulavin 翻译：CoderWangx  每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。 问题描述任何计算机系统都包含两方面：即 软件  与 硬件。">
+<meta name="keywords" content="构建系统,Build System">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]理解 Xcode 构建系统">
+<meta property="og:url" content="http://coderx.wang/2020-07/译-理解 Xcode 构建系统/index.html">
+<meta property="og:site_name" content="CoderWangx">
+<meta property="og:description" content="原文链接：https://www.vadimbulavin.com/xcode-build-system/ by Vadim Bulavin 翻译：CoderWangx  每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。 问题描述任何计算机系统都包含两方面：即 软件  与 硬件。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/language-processing-system.svg">
+<meta property="og:image" content="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/xcode-compiler.svg">
+<meta property="og:updated_time" content="2020-07-03T15:50:37.474Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]理解 Xcode 构建系统">
+<meta name="twitter:description" content="原文链接：https://www.vadimbulavin.com/xcode-build-system/ by Vadim Bulavin 翻译：CoderWangx  每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。 问题描述任何计算机系统都包含两方面：即 软件  与 硬件。">
+<meta name="twitter:image" content="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/language-processing-system.svg">
+
+<link rel="canonical" href="http://coderx.wang/2020-07/译-理解 Xcode 构建系统/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>[译]理解 Xcode 构建系统 | CoderWangx</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoderWangx</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">now is better than never</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://coderx.wang/2020-07/译-理解 Xcode 构建系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoderWangx">
+      <meta itemprop="description" content>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoderWangx">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译]理解 Xcode 构建系统
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-03 23:22:16" itemprop="dateCreated datePublished" datetime="2020-07-03T23:22:16+08:00">2020-07-03</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020-07/译-理解 Xcode 构建系统/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020-07/译-理解 Xcode 构建系统/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>原文链接：<a href="https://www.vadimbulavin.com/xcode-build-system/" target="_blank" rel="noopener">https://www.vadimbulavin.com/xcode-build-system/</a> by <a href="https://www.vadimbulavin.com/author/v8tr" target="_blank" rel="noopener">Vadim Bulavin</a></p>
+<p>翻译：<a href="https://coderx.wang">CoderWangx</a></p>
+</blockquote>
+<p>每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。</p>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a><strong>问题描述</strong></h3><p>任何计算机系统都包含两方面：即 <em>软件</em>  与 <em>硬件</em>。</p>
+<p><em>硬件</em> 是计算机的物理部分，例如显示器、键盘。<em>硬件</em> 通常由 <em>软件</em> 控制，<em>软件</em> 是指导硬件如何工作地一系列指令集合。软件负责编排过程，硬件负责实际执行工作，缺一不可。</p>
+<a id="more"></a>
+<p>作为软件工程师，我们主要关注软件部分。然而，硬件并不能直接理解使用 Swift 编写的代码，它只能接收电荷形式的指令，包含两个级别，分别称作<em>‘逻辑 0’</em>和<em>‘逻辑 1’</em>。</p>
+<p><em>这里就有个问题</em>：“如何将 Swift 代码转换成硬件能接受的形式”？ 答案是<em>语言处理系统</em>。</p>
+<h3 id="语言处理系统"><a href="#语言处理系统" class="headerlink" title="语言处理系统"></a><strong>语言处理系统</strong></h3><p><em>语言处理系统</em> 是一系列程序的集合，这些程序可以从一组用任意源语言编写的指令中生成可执行程序。这样就允许程序员使用高级语言而不用去写机器代码，大大降低了编程复杂度。</p>
+<p>我们在 iOS 或 macOS 开发中日常使用的语言处理系统就称作 <strong>Xcode 构建系统</strong>。</p>
+<h3 id="Xcode-构建系统"><a href="#Xcode-构建系统" class="headerlink" title="Xcode 构建系统"></a><strong>Xcode 构建系统</strong></h3><p><em>Xcode 构建系统</em> 的主要目标是协调各种不同任务的执行，最终生成一个可执行程序。</p>
+<p>Xcode 运行许多工具，并在它们之间传递数十个参数，处理执行顺序、并行性等等。这肯定不是你在编写下一个 Swift 项目时想要手动处理的。</p>
+<p>多数语言处理系统，包括 <em>Xcode 构建系统</em>，都包含 5 个部分：</p>
+<ul>
+<li>Preprocessor（预处理器）</li>
+<li>Compiler（编译器）</li>
+<li>Assembler（汇编器）</li>
+<li>Linker（链接器）</li>
+<li>Loader（加载器）</li>
+</ul>
+<p>它们通过如下图所示方式协作：</p>
+<p><img src="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/language-processing-system.svg" alt></p>
+<p>让我们仔细了解一下各个步骤。</p>
+<h4 id="Preprocessing-预处理"><a href="#Preprocessing-预处理" class="headerlink" title="Preprocessing 预处理"></a>Preprocessing 预处理</h4><p>预处理步骤的目的是将程序转换为可以被提供给编译器的形式。它将宏替换为具体定义，发现依赖项并解析预处理器指令。</p>
+<p>考虑到 <em>Swift</em> 编译器中没有预处理器，所以不允许在 <em>Swift</em> 项目中定义宏。尽管如此，<em>Xcode 构建系统</em> 还是进行了部分补足，通过在项目构建设置中配置 <em>Active Compilation Conditions （主动编译条件）</em>  方式来进行预处理。</p>
+<p><em>Xcode</em> 通过低级构建系统 <em>llbuild</em> 来解析依赖项，<em>llbuild</em> 是开源的，可以在 <a href="https://github.com/apple/swift-llbuild" target="_blank" rel="noopener">Github 上的 swift-llbuild 页面</a> 找到更多信息。</p>
+<h4 id="Compiler-编译器"><a href="#Compiler-编译器" class="headerlink" title="Compiler 编译器"></a>Compiler 编译器</h4><p><em>编译器</em> 是一个程序，它将一个语言的源程序映射为另一个语言中语义等效的目标程序。换句话说，<em>编译器</em> 将 <em>Swift</em>、<em>Objective-C</em>、<em>C/C++</em> 代码转换为机器码而不丢失前者的含义。</p>
+<p><em>Xcode</em> 使用两个不同的编译器：一个负责编译 <em>Swift</em>，另一个负责编译 <em>Objective-C</em>、<em>Objective-C++</em> 以及 <em>C/C++</em> 文件。</p>
+<p><code>clang</code> 是苹果官方的 C 语言家族编译器，已经开源：<a href="https://github.com/apple/swift-clang" target="_blank" rel="noopener">swift-clang</a>。</p>
+<p><code>swiftc</code> 是一个 <em>Swift</em> 编译器程序，被 <em>Xcode</em> 用于编译及运行 <em>Swift</em> 源代码。我冒昧地猜测你已经访问过这个链接至少一次：它位于<a href="https://github.com/apple/swift" target="_blank" rel="noopener">Swift 语言仓库</a>。</p>
+<p><em>编译器</em> 阶段如下图所示：</p>
+<p><img src="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/xcode-compiler.svg" alt="编译器流程"></p>
+<p>编译器由两个主要部分组成：前端和后端。</p>
+<p><em>前端</em> 部分将源程序分割为单独的部分，没有任何语义或类型信息，使用特定语法结构。然后编译器使用这个结构生成源程序的 <em>中间描述（intermediate representation）</em>。<em>前端</em> 也会创建并管理 <em>符号表（symbol table）</em>，以搜集源程序相关信息。</p>
+<blockquote>
+<p><em>符号</em>（Symbol）是数据或代码片段的名称。</p>
+</blockquote>
+<p><em>符号表</em> 存储你所命名的变量、方法、类的名称，每个 <em>符号</em> 都映射到一个确定的数据块。</p>
+<p>在 <em>Swift 编译器</em> 里 <em>中间描述（intermediate representation）</em> 被称作 <em>Swift 中间语言 Swift Intermediate Language (SIL)</em>。<em>SIL</em> 会被用于后续的分析及代码优化。直接从 <em>Swift 中间语言</em> 生成机器码是不可能的，因此 <em>SIL</em> 会再经过一次转换变为 <em>LLVM 中间描述（LLVM Intermediate Representation）</em>。</p>
+<p>在 <em>后端</em> 阶段，以上<em>LLVM 中间描述</em> 会被转换为汇编码。</p>
+<h4 id="Assembler-汇编器"><a href="#Assembler-汇编器" class="headerlink" title="Assembler 汇编器"></a>Assembler 汇编器</h4><p><em>汇编器</em> 将可读的汇编代码转换成 <em>可重定向的机器代码（relocatable machine code）</em>，生成 <em>Mach-O 文件</em>，基本上就是代码与数据的集合。</p>
+<p>上述定义中的术语：机器代码<em> 和 </em>Mach-O 文件* 还需要进一步解释。</p>
+<p><em>机器代码</em> 是一种数字化语言，表示一组可由 CPU 直接执行的指令。之所以命名为可重定向的，是因为不管对象文件在地址空间中何处，指令都会相对于所在空间来执行。</p>
+<p><em>Mach-O 文件</em> 是 iOS / macOS 操作系统中的一种特殊文件格式，用于对象文件、可执行文件及库。它是以一些有意义的块分组的字节流，运行于 iOS 设备上的 ARM 处理器或者 Mac 上的 Intel 处理器。</p>
+<h4 id="Linker-链接器"><a href="#Linker-链接器" class="headerlink" title="Linker 链接器"></a>Linker 链接器</h4><p><em>链接器</em> 是一个计算机程序，它将不同的对象文件和库合并起来生成一个可以在 iOS 或 macOS 系统上运行的 <em>Mach-O</em> 可执行文件。<em>链接器</em> 接收两种类型的文件作为输入，也就是来自 <em>汇编</em> 阶段的对象文件以及不同类型的库（ <code>.dylib</code>, <code>.tbd</code> , <code>.a</code>）。</p>
+<p>细心的读者可能已经注意到 <em>汇编器</em> 和 <em>链接器</em> 都生成了一个 <em>Mach-O</em> 文件作为输出。这两者应该有些不同，对吧？</p>
+<p>来自汇编阶段的对象文件并没有处理完成，其中一些包含引用其他对象文件或库的缺失部分。举个例子，如果在代码中使用了 <code>printf</code> 方法，是 <em>链接器</em> 将这个符号与实现 <code>printf</code> 方法的 <em>libc</em> 库粘合起来的。它使用 <em>编译</em> 阶段生成的 <em>符号表</em> 来解析跨不同对象文件与库之间的引用。</p>
+<blockquote>
+<p>在 <em>Xcode</em> 中构建具有上述特性的 <em>Swift</em> 项目时，你可以已经发现过 <em>“undefined symbol 未定义符号”</em> 错误。</p>
+</blockquote>
+<h4 id="Loader-加载器"><a href="#Loader-加载器" class="headerlink" title="Loader 加载器"></a>Loader 加载器</h4><p>最后，作为操作系统一部分，<em>加载器</em> 会将程序载入内存并执行。加载器分配运行程序所需内存空间并将寄存器初始化为初始状态。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>在软件工程中很难低估 <em>语言处理系统</em> 的重要性。我们可以自由选择几乎任何高级编程语言，例如 <em>Swift</em> 或 <em>Objective-C</em>，而不用去编写硬件才能理解的 0 和 1 二进制代码。语言处理系统会处理其余工作，生成一个可以在 iPhone、Mac 或其他任何终端运行的可执行程序。</p>
+<p>作为 iOS / macOS 开发者，我们日常基础工作中都在使用 <em>Xcode 构建系统</em>。它的主要组件有：<em>preprocessor 预处理器</em>、<em>compiler 编译器</em>、<em>assembler 汇编器</em>、<em>linker 链接器</em>、以及 <em>loader 加载器</em>。<em>Xcode</em> 针对 <em>Swift</em> 和 <em>Objective-C</em> 使用不同的编译器，对应分别是 <code>swiftc</code> 和 <code>clang</code> 。</p>
+<p>理解 Xcode 编译过程是基础知识，对于初学者和经验丰富的开发人员都非常重要。</p>
+<hr>
+<p><strong>感谢阅读</strong></p>
+<p>如果你觉得不错，可以在 <a href="https://twitter.com/V8tr" target="_blank" rel="noopener">Twitter</a> 上关注原作者；如果发现问题或有更好建议，欢迎留言或通过 <a href="https://github.com/coderxdotwang" target="_blank" rel="noopener">Github </a>与我讨论。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>CoderWangx
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://coderx.wang/2020-07/译-理解 Xcode 构建系统/" title="[译]理解 Xcode 构建系统">http://coderx.wang/2020-07/译-理解 Xcode 构建系统/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/构建系统/" rel="tag"><i class="fa fa-tag"></i> 构建系统</a>
+              <a href="/tags/Build-System/" rel="tag"><i class="fa fa-tag"></i> Build System</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020-03/Python-网页抓取与数据可视化练习：‘金三银四’-是真的吗？/" rel="next" title="Python 网页抓取与数据可视化练习：‘金三银四’ 是真的吗？">
+      Python 网页抓取与数据可视化练习：‘金三银四’ 是真的吗？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题描述"><span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语言处理系统"><span class="nav-text">语言处理系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xcode-构建系统"><span class="nav-text">Xcode 构建系统</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Preprocessing-预处理"><span class="nav-text">Preprocessing 预处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Compiler-编译器"><span class="nav-text">Compiler 编译器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Assembler-汇编器"><span class="nav-text">Assembler 汇编器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Linker-链接器"><span class="nav-text">Linker 链接器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Loader-加载器"><span class="nav-text">Loader 加载器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoderWangx</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/coderxdotwang" title="GitHub → https://github.com/coderxdotwang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/6288484" title="StackOverflow → https://stackoverflow.com/users/6288484" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoderWangx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : false,
+      appId      : 'O4a57wLfn3IjVJeSRPbfHRkW-gzGzoHsz',
+      appKey     : 'BADPOccLvd5InSDWvG4vycrI',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'en' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
