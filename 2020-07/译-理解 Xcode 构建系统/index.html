@@ -28,13 +28,13 @@
 <meta property="og:site_name" content="CoderWangx">
 <meta property="og:description" content="原文链接：https://www.vadimbulavin.com/xcode-build-system/ by Vadim Bulavin 翻译：CoderWangx  每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。 问题描述任何计算机系统都包含两方面：即 软件  与 硬件。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/language-processing-system.svg">
-<meta property="og:image" content="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/xcode-compiler.svg">
-<meta property="og:updated_time" content="2020-07-03T15:50:37.474Z">
+<meta property="og:image" content="https://cwblog.oss-cn-hangzhou.aliyuncs.com/images/language-processing-system.svg">
+<meta property="og:image" content="https://cwblog.oss-cn-hangzhou.aliyuncs.com/images/xcode-compiler.svg">
+<meta property="og:updated_time" content="2020-07-06T13:44:04.780Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]理解 Xcode 构建系统">
 <meta name="twitter:description" content="原文链接：https://www.vadimbulavin.com/xcode-build-system/ by Vadim Bulavin 翻译：CoderWangx  每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。 问题描述任何计算机系统都包含两方面：即 软件  与 硬件。">
-<meta name="twitter:image" content="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/language-processing-system.svg">
+<meta name="twitter:image" content="https://cwblog.oss-cn-hangzhou.aliyuncs.com/images/language-processing-system.svg">
 
 <link rel="canonical" href="http://coderx.wang/2020-07/译-理解 Xcode 构建系统/">
 
@@ -231,7 +231,7 @@
 <li>Loader（加载器）</li>
 </ul>
 <p>它们通过如下图所示方式协作：</p>
-<p><img src="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/language-processing-system.svg" alt></p>
+<p><img src="https://cwblog.oss-cn-hangzhou.aliyuncs.com/images/language-processing-system.svg" alt="language processing system"></p>
 <p>让我们仔细了解一下各个步骤。</p>
 <h4 id="Preprocessing-预处理"><a href="#Preprocessing-预处理" class="headerlink" title="Preprocessing 预处理"></a>Preprocessing 预处理</h4><p>预处理步骤的目的是将程序转换为可以被提供给编译器的形式。它将宏替换为具体定义，发现依赖项并解析预处理器指令。</p>
 <p>考虑到 <em>Swift</em> 编译器中没有预处理器，所以不允许在 <em>Swift</em> 项目中定义宏。尽管如此，<em>Xcode 构建系统</em> 还是进行了部分补足，通过在项目构建设置中配置 <em>Active Compilation Conditions （主动编译条件）</em>  方式来进行预处理。</p>
@@ -241,7 +241,7 @@
 <p><code>clang</code> 是苹果官方的 C 语言家族编译器，已经开源：<a href="https://github.com/apple/swift-clang" target="_blank" rel="noopener">swift-clang</a>。</p>
 <p><code>swiftc</code> 是一个 <em>Swift</em> 编译器程序，被 <em>Xcode</em> 用于编译及运行 <em>Swift</em> 源代码。我冒昧地猜测你已经访问过这个链接至少一次：它位于<a href="https://github.com/apple/swift" target="_blank" rel="noopener">Swift 语言仓库</a>。</p>
 <p><em>编译器</em> 阶段如下图所示：</p>
-<p><img src="https://www.vadimbulavin.com/assets/images/posts/xcode-build-system/xcode-compiler.svg" alt="编译器流程"></p>
+<p><img src="https://cwblog.oss-cn-hangzhou.aliyuncs.com/images/xcode-compiler.svg" alt="Xcode compiler"></p>
 <p>编译器由两个主要部分组成：前端和后端。</p>
 <p><em>前端</em> 部分将源程序分割为单独的部分，没有任何语义或类型信息，使用特定语法结构。然后编译器使用这个结构生成源程序的 <em>中间描述（intermediate representation）</em>。<em>前端</em> 也会创建并管理 <em>符号表（symbol table）</em>，以搜集源程序相关信息。</p>
 <blockquote>
