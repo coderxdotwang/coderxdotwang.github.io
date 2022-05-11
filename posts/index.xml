@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on 编程蚂蚁</title><link>https://coderx.wang/posts/</link><description>Recent content in Posts on 编程蚂蚁</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 03 Jul 2020 23:22:16 +0800</lastBuildDate><atom:link href="https://coderx.wang/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>「译」理解 Xcode 构建系统</title><link>https://coderx.wang/posts/%E8%AF%91-%E7%90%86%E8%A7%A3-xcode-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F/</link><pubDate>Fri, 03 Jul 2020 23:22:16 +0800</pubDate><guid>https://coderx.wang/posts/%E8%AF%91-%E7%90%86%E8%A7%A3-xcode-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F/</guid><description>原文链接：https://www.vadimbulavin.com/xcode-build-system/ by Vadim Bulavin
+翻译：CoderWangx
+每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。
+问题描述 任何计算机系统都包含两方面：即 软件 与 硬件。
+硬件 是计算机的物理部分，例如显示器、键盘。硬件 通常由 软件 控制，软件 是指导硬件如何工作地一系列指令集合。软件负责编排过程，硬件负责实际执行工作，缺一不可。
+作为软件工程师，我们主要关注软件部分。然而，硬件并不能直接理解使用 Swift 编写的代码，它只能接收电荷形式的指令，包含两个级别，分别称作*‘逻辑 0’和‘逻辑 1’*。
+这里就有个问题：“如何将 Swift 代码转换成硬件能接受的形式”？ 答案是语言处理系统。
+语言处理系统 语言处理系统 是一系列程序的集合，这些程序可以从一组用任意源语言编写的指令中生成可执行程序。这样就允许程序员使用高级语言而不用去写机器代码，大大降低了编程复杂度。
+我们在 iOS 或 macOS 开发中日常使用的语言处理系统就称作 Xcode 构建系统。
+Xcode 构建系统 Xcode 构建系统 的主要目标是协调各种不同任务的执行，最终生成一个可执行程序。
+Xcode 运行许多工具，并在它们之间传递数十个参数，处理执行顺序、并行性等等。这肯定不是你在编写下一个 Swift 项目时想要手动处理的。
+多数语言处理系统，包括 Xcode 构建系统，都包含 5 个部分：
+Preprocessor（预处理器） Compiler（编译器） Assembler（汇编器） Linker（链接器） Loader（加载器） 它们通过如下图所示方式协作：
+让我们仔细了解一下各个步骤。
+Preprocessing 预处理 预处理步骤的目的是将程序转换为可以被提供给编译器的形式。它将宏替换为具体定义，发现依赖项并解析预处理器指令。</description></item><item><title>Python 网页抓取与数据可视化练习：‘金三银四’ 是真的吗？</title><link>https://coderx.wang/posts/python-%E7%BD%91%E9%A1%B5%E6%8A%93%E5%8F%96%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%83%E4%B9%A0%E9%87%91%E4%B8%89%E9%93%B6%E5%9B%9B-%E6%98%AF%E7%9C%9F%E7%9A%84%E5%90%97/</link><pubDate>Thu, 19 Mar 2020 22:42:41 +0000</pubDate><guid>https://coderx.wang/posts/python-%E7%BD%91%E9%A1%B5%E6%8A%93%E5%8F%96%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%83%E4%B9%A0%E9%87%91%E4%B8%89%E9%93%B6%E5%9B%9B-%E6%98%AF%E7%9C%9F%E7%9A%84%E5%90%97/</guid><description>一年之计在于春，2020 的春天因为疫情可能改变了许多人的计划，如三四月份是企业传统招聘高峰期之一，再有许多帅小伙过年拜见了丈母娘催促着得买房等，职场与楼市素有 ‘金三银四’ 的说法，然而，这是真的吗？
+最近又学习了一下 Python（为什么是又？因为学了就忘..），想到何不简单验证一下，毕竟数据不会撒谎。
+主要流程：
+选取楼市情况作为分析对象，与目前公司业务有点相关性。 从 武汉市住房保障和房屋管理局 网站获取公开的新建商品房成交统计数据。 读取数据并可视化，结合图表简要分析得出初步结论。 先贴最终生成的可视化数据图：
+1、获取数据 先使用 ‘为人类设计的 HTTP 库’ - requests 从房管局网站上获取包含公开成交统计数据的 HTML 页面，数据分为按日统计发布的及按月统计发布的。然后使用 HTML 与 XML 处理库 lxml 解析 HTML 页面内容，分析后通过合适的 xpath 提取所需数据。
+最开始我的想法是读取每日数据再分别计算出每个月的数据，爬完后发现目录页下面紧挨着的就是按月统计数据（笑哭.jpg ，但是按月的数据只发布到了2019年11月，连整两年都凑不足可不行，于是结合按日统计数据（发布到了2020年01月23日）计算出了2019年12月的数据，果然人生没有白走的路：）
+import requests import lxml.html import html import time import db_operator def get_all_monthly_datas(): &amp;#34;&amp;#34;&amp;#34;按月获取所有成交数据&amp;#34;&amp;#34;&amp;#34; # 索引页（商品住房销售月度成交统计） index_url = &amp;#39;http://fgj.wuhan.gov.cn/spzfxysydjcjb/index.jhtml&amp;#39; max_page = get_max_page(index_url) if max_page &amp;gt; 0: print(&amp;#39;共 &amp;#39; + str(max_page) + &amp;#39; 页，&amp;#39; + &amp;#39;开始获取月度数据.</description></item><item><title>iOS 打包发布自动化实践：fastlane</title><link>https://coderx.wang/posts/ios-%E6%89%93%E5%8C%85%E5%8F%91%E5%B8%83%E8%87%AA%E5%8A%A8%E5%8C%96%E5%AE%9E%E8%B7%B5fastlane/</link><pubDate>Sun, 07 Jul 2019 23:19:10 +0000</pubDate><guid>https://coderx.wang/posts/ios-%E6%89%93%E5%8C%85%E5%8F%91%E5%B8%83%E8%87%AA%E5%8A%A8%E5%8C%96%E5%AE%9E%E8%B7%B5fastlane/</guid><description>结合近期团队打包发布过程较耗时，影响开发效率问题，最近体验实践了一遍自动打包工具 fastlane，记录一下基本过程及碰到的问题。（纯记录贴，没有实践过的可以看看碰到的问题部分，有经验的前辈可以瞅一眼疑问部分指点一下：）
+安装及初始化 按文档，在终端中依次运行以下命令：
+安装最新版本的 Xcode 命令行工具
+xcode-select &amp;ndash;install
+安装 fastlane
+# 使用 RubyGems sudo gem install fastlane -NV # 或者使用 Homebrew brew cask install fastlane
+导航至项目目录并运行
+fastlane init
+成功后输出：
+查看项目目录可以看到如终端数据的提示，生成了 fastlane 目录，包含两个文件：Fastfile、Appfile。以及 Gemfile 和 Gemfile.lock。
+配置 主要为配置 Appfile 及 Fastfile。
+Appfile 主要为配置一些通用信息，例如 app_identifier（Bundle Identifier）、apple_id（Apple ID）。如果不配置，在执行命令时需要相关信息终端会提示并等待用户输入。如果开发者账号归属于多个 team，需要指定 team_name 及 team_id，如果需要上传到 App Store Connect，需要配置 itc_team_name 及 itc_team_id。还可以为不同的 lane（一个 lane 即为一个打包动作命令集合）复写为不同的值，例如针对测试版本与生产版本做不同配置。</description></item><item><title>「译」理解iOS异常类型</title><link>https://coderx.wang/posts/%E8%AF%91-%E7%90%86%E8%A7%A3ios%E5%BC%82%E5%B8%B8%E7%B1%BB%E5%9E%8B/</link><pubDate>Sun, 16 Jun 2019 17:47:50 +0800</pubDate><guid>https://coderx.wang/posts/%E8%AF%91-%E7%90%86%E8%A7%A3ios%E5%BC%82%E5%B8%B8%E7%B1%BB%E5%9E%8B/</guid><description>原文链接：Understanding iOS Exception Types (PS.由于未知原因已失效，经检查，文章中引用的链接都还有效 ：) 翻译：CoderWangx
+当你的iOS应用崩溃的时候，我们需要去分析异常日志以定位根本原因。崩溃可能是 “低内存崩溃 Low Memory Crash” 或者 “普通异常崩溃”。当碰到“异常”时，更好的理解“不同类型的异常”能够真正帮助我们快速定位问题所在。
+在这篇文章中，我们将研究 iOS 应用可能碰到的不同类型的“异常”，例如EXC_CRASH、EXC_BAD_ACCESS、EXC_RESOURCE、00000020 等。
+[TOC]
+崩溃日志中的“异常” “异常”这个词在“崩溃日志”语境下更多与“Mach 异常”（以“EXC_为前缀”）和 “UNIX 信号”（如: SIGSEGV, SIGBUS等）相关。在某些情况下（应该是有对应的dSYM符号文件时）系统会通过映射将底层的 Mach 异常 翻译为 UNIX 信号。这就是为什么你能log中看到有用 “EXC_CRASH(SIGABRT)” 及 “EXC_BAC_ACCESS(SIGSEGV)” 作为 异常类型（Exception Type）。
+对于某些异常，还会附带一个关联的 处理器定制异常码（processor-specific Exception Code） 或者 异常子类型（Exception Subtype），用以包含更多问题相关信息。举例来说， “EXC_BAC_ACCESS” 类型异常可能有一行如“KERN_INVALID_ADDRESS at 0x80000010”作为“异常码”； “EXC_RESOURCE” 可能有一行&amp;quot;WAKEUPS&amp;quot;作为&amp;quot;异常子类别&amp;quot;。
+UNIX 信号 iOS开发者常见的 UNIX 信号 如下：
+UNIX 信号 注释 SIGSEGV 访问无效的内存地址。地址存在，但是应用程序无法访问。 SIGABRT 程序崩溃。由 C函数 abort() 初始化。通常意味着系统检测到某些事务出错，例如 assert() 或者 NSAssert() 校验失败。 SIGBUS 访问无效的内存地址。地址不存在，或对齐无效。（The address does not exist, or the alignment is invalid.</description></item></channel></rss>

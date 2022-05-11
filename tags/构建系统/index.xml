@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>构建系统 on 编程蚂蚁</title><link>https://coderx.wang/tags/%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F/</link><description>Recent content in 构建系统 on 编程蚂蚁</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 03 Jul 2020 23:22:16 +0800</lastBuildDate><atom:link href="https://coderx.wang/tags/%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml"/><item><title>「译」理解 Xcode 构建系统</title><link>https://coderx.wang/posts/%E8%AF%91-%E7%90%86%E8%A7%A3-xcode-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F/</link><pubDate>Fri, 03 Jul 2020 23:22:16 +0800</pubDate><guid>https://coderx.wang/posts/%E8%AF%91-%E7%90%86%E8%A7%A3-xcode-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F/</guid><description>原文链接：https://www.vadimbulavin.com/xcode-build-system/ by Vadim Bulavin
+翻译：CoderWangx
+每一个 Swift 程序在真实设备上运行前都要经历一系列转换。这个过程通常是由 Xcode 构建系统处理的。在这篇文章中我们将了解 Xcode 构建系统的各个部分。
+问题描述 任何计算机系统都包含两方面：即 软件 与 硬件。
+硬件 是计算机的物理部分，例如显示器、键盘。硬件 通常由 软件 控制，软件 是指导硬件如何工作地一系列指令集合。软件负责编排过程，硬件负责实际执行工作，缺一不可。
+作为软件工程师，我们主要关注软件部分。然而，硬件并不能直接理解使用 Swift 编写的代码，它只能接收电荷形式的指令，包含两个级别，分别称作*‘逻辑 0’和‘逻辑 1’*。
+这里就有个问题：“如何将 Swift 代码转换成硬件能接受的形式”？ 答案是语言处理系统。
+语言处理系统 语言处理系统 是一系列程序的集合，这些程序可以从一组用任意源语言编写的指令中生成可执行程序。这样就允许程序员使用高级语言而不用去写机器代码，大大降低了编程复杂度。
+我们在 iOS 或 macOS 开发中日常使用的语言处理系统就称作 Xcode 构建系统。
+Xcode 构建系统 Xcode 构建系统 的主要目标是协调各种不同任务的执行，最终生成一个可执行程序。
+Xcode 运行许多工具，并在它们之间传递数十个参数，处理执行顺序、并行性等等。这肯定不是你在编写下一个 Swift 项目时想要手动处理的。
+多数语言处理系统，包括 Xcode 构建系统，都包含 5 个部分：
+Preprocessor（预处理器） Compiler（编译器） Assembler（汇编器） Linker（链接器） Loader（加载器） 它们通过如下图所示方式协作：
+让我们仔细了解一下各个步骤。
+Preprocessing 预处理 预处理步骤的目的是将程序转换为可以被提供给编译器的形式。它将宏替换为具体定义，发现依赖项并解析预处理器指令。</description></item></channel></rss>
